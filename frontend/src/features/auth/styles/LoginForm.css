@@ -1,0 +1,21 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-link {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.auth-link a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

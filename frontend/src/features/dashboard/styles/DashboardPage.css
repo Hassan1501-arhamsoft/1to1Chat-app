@@ -1,0 +1,150 @@
+/* ========================================
+   Dashboard Layout
+======================================== */
+
+.dashboard {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+
+/* ========================================
+   Left - Users Section
+======================================== */
+
+.users-section {
+  width: 340px;
+  min-width: 280px;
+  height: 100%;
+
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   Right - Chat Section
+======================================== */
+
+.chat-section {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+
+  background: #f8fafc;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   Modern Scrollbars
+======================================== */
+
+.users-section::-webkit-scrollbar,
+.chat-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.users-section::-webkit-scrollbar-track,
+.chat-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.users-section::-webkit-scrollbar-thumb,
+.chat-section::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+.users-section::-webkit-scrollbar-thumb:hover,
+.chat-section::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+
+/* ========================================
+   Responsive - Tablet
+======================================== */
+
+@media (max-width: 900px) {
+  .users-section {
+    width: 300px;
+    min-width: 260px;
+  }
+}
+
+
+/* ========================================
+   Responsive - Mobile
+======================================== */
+
+@media (max-width: 700px) {
+  .dashboard {
+    position: relative;
+  }
+
+  .users-section {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .chat-section {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+
+/* ========================================
+   Small Mobile
+======================================== */
+
+@media (max-width: 480px) {
+  .users-section {
+    width: 100%;
+  }
+
+  .chat-section {
+    width: 100%;
+  }
+}
+.users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.users-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.logout-button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #222;
+}

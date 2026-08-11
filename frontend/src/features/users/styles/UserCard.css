@@ -1,0 +1,78 @@
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 15px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    border: 1px solid #ddd;
+}
+
+
+.user-info {
+    flex: 1;
+}
+
+
+.user-info h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+
+.user-info p {
+    margin: 5px 0;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+/* Status */
+
+.status {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.online {
+    color: green;
+}
+
+
+.offline {
+    color: gray;
+}
+
+
+
+/* Button */
+
+.message-btn {
+
+    padding: 8px 14px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+.message-btn:hover {
+
+    opacity: .8;
+
+}

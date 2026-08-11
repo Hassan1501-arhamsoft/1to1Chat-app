@@ -1,0 +1,164 @@
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #f5f5f5;
+}
+
+/* Empty chat */
+.empty-chat {
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  text-align: center;
+}
+
+.empty-chat h2 {
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.empty-chat p {
+  margin: 0;
+  color: #888;
+}
+
+/* Chat Header */
+.chat-header {
+  padding: 18px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #222;
+}
+
+.chat-header p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* Messages area */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-messages > div {
+  width: fit-content;
+  max-width: 65%;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.chat-messages strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #555;
+}
+
+.chat-messages p {
+  margin: 0;
+  font-size: 14px;
+  color: #222;
+  word-break: break-word;
+}
+
+/* Message input */
+.chat-input {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+.chat-input input:focus {
+  border-color: #888;
+}
+
+.chat-input button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat-input button:hover {
+  background-color: #222;
+}
+.message-content {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.message-content p {
+  margin: 0;
+}
+
+.message-status {
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.message-status.sent {
+  color: #777;
+}
+
+.message-status.delivered {
+  color: #777;
+}
+
+.message-status.read {
+  color: #2196f3;
+}
+
+.message {
+  width: fit-content;
+  max-width: 65%;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.my-message {
+  align-self: flex-end;
+  background-color: #d9fdd3;
+}
+
+.received-message {
+  align-self: flex-start;
+  background-color: #ffffff;
+}
+
+.received-message strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
