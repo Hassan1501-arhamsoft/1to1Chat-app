@@ -7,18 +7,38 @@ export const createMessage = async (
   message,
   status = "sent"
 ) => {
-  const newMessage = await Message.create({
+  const newMessage = await Message.create({ //! this await is necessary to ensure the message is saved before we attempt to retrieve it with populate.
     sender,
     receiver,
     message,
     status,
   });
 
-  return await Message.findById(newMessage._id)
+  return await Message.findById(newMessage._id) //! await is necessary to ensure we retrieve the message with populated fields before returning it.
     .populate("sender", "name")
     .populate("receiver", "name");
 };
 
+// Mark messages as read
+export const markMessagesAsRead = async (
+  senderId,
+  receiverId
+) => {
+  //! remove the "return" here because we don't need to return anything from this function, we just want to mark the messages as read in the database.
+  //! this await is necessary to ensure we update the messages before continuing, even though we don't return anything from this function.
+  await Message.updateMany(
+    {
+      sender: senderId,
+      receiver: receiverId,
+      status: { $ne: "read" },
+    },
+    {
+      $set: {
+        status: "read",
+      },
+    }
+  );
+};
 // Get conversation between two users
 export const getConversation = async (
   user1,
@@ -28,7 +48,7 @@ export const getConversation = async (
 ) => {
   const skip = (page - 1) * limit;
 
-  const messages = await Message.find({
+  const messages = await Message.find({ //! this await is necessary to ensure we retrieve the messages before returning them.
     $or: [
       {
         sender: user1,
@@ -49,21 +69,4 @@ export const getConversation = async (
   return messages.reverse();
 };
 
-// Mark messages as read
-export const markMessagesAsRead = async (
-  senderId,
-  receiverId
-) => {
-  return await Message.updateMany(
-    {
-      sender: senderId,
-      receiver: receiverId,
-      status: { $ne: "read" },
-    },
-    {
-      $set: {
-        status: "read",
-      },
-    }
-  );
-};
+

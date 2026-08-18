@@ -6,14 +6,12 @@ import {
 } from "../services/message.service.js";
 
 let onlineUsers = [];
-
-// Store which chat each online user is currently viewing
 let activeChats = [];
 
 export const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:5174",
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
     },
   });
@@ -27,7 +25,8 @@ export const initializeSocket = (httpServer) => {
 
     socket.on("addNewUser", (userId) => {
       // Remove old connection of same user
-      onlineUsers = onlineUsers.filter(
+      //! suppose a user has multiple tabs open, we want to remove the old connection of the same user and add the new one. This way, we can ensure that the user is only connected once and we can send messages to the correct socket.
+      onlineUsers = onlineUsers.filter(   
         (user) => user.userId !== userId
       );
 
@@ -48,7 +47,7 @@ export const initializeSocket = (httpServer) => {
     socket.on("openChat", async ({ userId, chatWith }) => {
       try {
         // Remove previous active chat of this user
-        activeChats = activeChats.filter(
+        activeChats = activeChats.filter(  
           (chat) => chat.userId !== userId
         );
 
@@ -61,20 +60,31 @@ export const initializeSocket = (httpServer) => {
         console.log("💬 Active Chats:", activeChats);
 
         // Messages from chatWith → current user
-        // are now read
-        await markMessagesAsRead(chatWith, userId);
-
+        // are now read 
+        //! remove the await here because we don't need to wait for the result of this function, we just want to mark the messages as read in the database.
+        
+        markMessagesAsRead(chatWith, userId); 
         // Find chatWith user
         const senderUser = onlineUsers.find(
           (user) => user.userId === chatWith
         );
+        //! testing the senderUser and receiverUser
+        // const receiverUser = onlineUsers.find(
+        //   (user) => user.userId === userId
+        // );
+        // console.log("senderUser", senderUser);
+        // console.log("receiverUser", receiverUser);
 
         // Tell sender that their messages were read
-        if (senderUser) {
+        //! if i remove the if condition here, it will throw an error if the senderUser is not found. So i will keep the if condition here to avoid that error.
+        if (senderUser) { 
           io.to(senderUser.socketId).emit("messagesRead", {
             readerId: userId,
           });
+          
         }
+      
+
       } catch (error) {
         console.error("Open Chat Error:", error);
       }
@@ -126,20 +136,21 @@ export const initializeSocket = (httpServer) => {
         }
 
         // Save message to MongoDB
-        const newMessage = await createMessage(
+        const newMessage = await createMessage(  //!  i don't remove this await because we need the updated data from the db.
           sender,
           receiver,
           message,
           messageStatus
         );
-
+        // console.log("💬 New Message:", newMessage);
         // Send message to receiver if online
-        if (receiverUser) {
+        //! Because if the receiver is offline then it give undefined 
+         if (receiverUser) { 
           io.to(receiverUser.socketId).emit("receiveMessage", {
             success: true,
             data: newMessage,
           });
-        }
+        }//!
 
         // Send message status back to sender
         socket.emit("messageSent", {
@@ -160,6 +171,8 @@ export const initializeSocket = (httpServer) => {
       const disconnectedUser = onlineUsers.find(
         (user) => user.socketId === socket.id
       );
+
+      // disconnectingUser = userid
 
       if (disconnectedUser) {
         // Remove from online users

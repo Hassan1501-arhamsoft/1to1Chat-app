@@ -28,7 +28,7 @@ export const protect = async (req, res, next) => {
     );
 
     // IMPORTANT: Check your JWT payload
-    const user = await User.findById(
+    const user = await User.findById(  //! this await is necessary to ensure we retrieve the user before proceeding with the request.
       decoded.userId || decoded.id
     ).select("-password");
 

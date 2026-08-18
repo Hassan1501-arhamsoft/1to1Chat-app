@@ -4,7 +4,7 @@ export const getUsers = async (req, res, next) => {
   try {
     const { search = "" } = req.query;
 
-    const users = await getAllUsers(
+    const users = await getAllUsers(  //! this await is necessary to ensure we retrieve the users before returning them.
       req.user.id,
       search
     );

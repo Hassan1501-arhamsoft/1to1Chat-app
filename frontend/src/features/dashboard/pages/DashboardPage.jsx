@@ -6,7 +6,8 @@ import useAuth from "../../auth/hooks/useAuth";
 import "../styles/DashboardPage.css";
 
 function DashboardPage() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  
 
   const handleLogout = () => {
     logout();
@@ -19,7 +20,8 @@ function DashboardPage() {
       <div className="users-section">
 
         <div className="users-header">
-          <h2>Users</h2>
+          <h2>{user?.name}</h2>
+          
 
           <button
             className="logout-button"

@@ -9,15 +9,13 @@ function useChat() {
   const { selectedUser } = useChatContext();
   const {  onlineUsers } = useSocket();
   const { socket } = useSocket();
-
   const { user } = useAuth();
-
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
-const [hasMore, setHasMore] = useState(true);
-const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Load messages when a user is selected
  useEffect(() => {
@@ -60,7 +58,7 @@ const [loadingMore, setLoadingMore] = useState(false);
     const currentUserId = user._id || user.id;
     const selectedUserId = selectedUser._id;
 
-    console.log(currentUserId, selectedUserId);
+    
     // Tell backend which chat is open
     socket.emit("openChat", {
       userId: currentUserId,
@@ -106,7 +104,7 @@ const [loadingMore, setLoadingMore] = useState(false);
           // Change my messages to "read"
           if (
             senderId === currentUserId &&
-            receiverId === selectedUserId
+            receiverId === selectedUser 
           ) {
             return {
               ...message,

@@ -7,7 +7,7 @@ export const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
 
-    const result = await registerUserService({
+    const result = await registerUserService({ //! this await is necessary to ensure we register the user before returning the response.
       name,
       email,
       password,
@@ -28,7 +28,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const result = await loginUserService(email, password);
+    const result = await loginUserService(email, password); //! this await is necessary to ensure we login the user before returning the response.
 
     return successResponse(
       res,

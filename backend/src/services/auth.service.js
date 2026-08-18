@@ -6,18 +6,18 @@ export const registerUserService = async (userData) => {
   const { name, email, password } = userData;
 
   // Check existing user
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email }); //! this await is necessary to ensure we check for existing users before proceeding with registration.
 
   if (existingUser) {
     throw new Error("Email already exists.");
   }
 
   // Hash password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10); //! this await is necessary to ensure we generate a salt before hashing the password.
+  const hashedPassword = await bcrypt.hash(password, salt); //! this await is necessary to ensure we hash the password before saving the user.
 
   // Create user
-  const user = await User.create({
+  const user = await User.create({  //! this await is necessary to ensure we create the user before generating a token.
     name,
     email,
     password: hashedPassword,
@@ -41,14 +41,14 @@ export const registerUserService = async (userData) => {
 
 export const loginUserService = async (email, password) => {
   // Find user
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }); //! this await is necessary to ensure we find the user before comparing passwords.
 
   if (!user) {
     throw new Error("Invalid email or password.");
   }
 
   // Compare password
-  const isPasswordMatched = await bcrypt.compare(
+  const isPasswordMatched = await bcrypt.compare( //! this await is necessary to ensure we compare the passwords before proceeding with login.
     password,
     user.password
   );
