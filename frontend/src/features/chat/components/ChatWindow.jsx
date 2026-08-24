@@ -131,7 +131,7 @@ function ChatWindow() {
         )}
 
         {messages.map((message, index) => {
-          // ✅ FIX: Check for MySQL 'id' and MongoDB '_id', as well as relational 'senderId'
+          
           const senderId =
             typeof message.sender === "object"
               ? (message.sender?.id || message.sender?._id)
@@ -142,7 +142,7 @@ function ChatWindow() {
 
           return (
             <div
-              key={message.id || message._id || index} // ✅ FIX: Added fallback key mapping
+              key={message.id || message._id || index} 
               className={
                 isMyMessage
                   ? "message my-message"

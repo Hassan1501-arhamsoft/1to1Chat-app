@@ -34,7 +34,7 @@ export const getMessages = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
 
-    const messages = await getConversation( //! this await is necessary to ensure we retrieve the messages before returning them.
+    const messages = await getConversation( 
       user1,
       userId,
       page,

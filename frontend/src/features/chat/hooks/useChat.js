@@ -104,7 +104,7 @@ function useChat() {
           // Change my messages to "read"
           if (
             senderId === currentUserId &&
-            receiverId === selectedUser._id 
+            receiverId === selectedUser._id || selectedUser.id
           ) {
             return {
               ...message,
@@ -181,7 +181,7 @@ const fetchMoreMessages = async () => {
 
     const selectedUserIsOnline = onlineUsers.some(
       (onlineUser) =>
-        onlineUser.userId === selectedUser._id
+        onlineUser.userId === selectedUser._id 
     );
 
     // Selected user is offline
@@ -196,19 +196,19 @@ const fetchMoreMessages = async () => {
       oldMessages.map((message) => {
         const senderId =
           typeof message.sender === "object"
-            ? message.sender._id
+            ? message.sender._id || message.sender.id 
             : message.sender;
 
         const receiverId =
           typeof message.receiver === "object"
-            ? message.receiver._id
+            ? message.receiver._id || message.receiver.id 
             : message.receiver;
 
         // Only change my messages
         // sent to the selected user
         if (
           senderId === currentUserId &&
-          receiverId === selectedUser._id &&
+          receiverId === selectedUser._id || selectedUser.id &&
           message.status === "sent"
         ) {
           return {
