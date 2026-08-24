@@ -20,4 +20,6 @@ app.use(loggerMiddleware);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
+
+
 export default app;

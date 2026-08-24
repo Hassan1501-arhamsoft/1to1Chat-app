@@ -1,7 +1,7 @@
 import "../styles/UserCard.css";
 import { useSocket } from "../../../context/SocketContext";
-
 import { useChatContext } from "../../../context/ChatContext";
+
 
 function UserCard({ user }) {
   const { onlineUsers } = useSocket();
@@ -30,7 +30,7 @@ function UserCard({ user }) {
               : "status offline"
           }
         >
-          {isOnline ? "Online" : "Offline"}
+          {isOnline ? "🟢 Online" : "🔴 Offline"}
         </span>
       </div>
 

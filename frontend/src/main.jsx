@@ -8,14 +8,16 @@ import App from "./App.jsx";
 import AuthProvider from "./features/auth/context/AuthContext.jsx";
 import { SocketContextProvider } from "./context/SocketContext.jsx";
 import { ChatProvider } from "./context/ChatContext.jsx";
-
+import { CallProvider } from "./features/call/context/CallContext.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <SocketContextProvider>
           <ChatProvider>
-            <App />
+             <CallProvider>
+             <App />
+              </CallProvider>
           </ChatProvider>
         </SocketContextProvider>
       </AuthProvider>

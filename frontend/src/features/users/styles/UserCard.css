@@ -42,15 +42,26 @@
 
 
 .online {
-    color: green;
+    color: rgb(18, 192, 18);
+    animation: online-text-glow 1.5s ease-in-out infinite alternate;
 }
 
 
 .offline {
     color: gray;
+    
+
 }
 
 
+@keyframes online-text-glow {
+    0% {
+        text-shadow: 0 0 2px rgb(18, 192, 18);
+    }
+    100% {
+        text-shadow: 0 0 6px rgb(18, 192, 18), 0 0 12px lightgreen;
+    }
+}
 
 /* Button */
 
@@ -64,7 +75,7 @@
 
     cursor: pointer;
 
-    background: #2563eb;
+    background: #017e18db;
 
     color: white;
 

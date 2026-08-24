@@ -104,7 +104,7 @@ function useChat() {
           // Change my messages to "read"
           if (
             senderId === currentUserId &&
-            receiverId === selectedUser 
+            receiverId === selectedUser._id 
           ) {
             return {
               ...message,

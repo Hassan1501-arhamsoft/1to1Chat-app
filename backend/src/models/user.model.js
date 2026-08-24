@@ -1,43 +1,92 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import sequelize from "../config/db.js";
 
-const userSchema = new mongoose.Schema(
+const User = sequelize.define(
+  "User",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      minlength: [3, "Name must be at least 3 characters"],
-      maxlength: [50, "Name cannot exceed 50 characters"],
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      validate: {
+        len: [3, 50],
+      },
     },
-
     email: {
-      type: String,
-      required: [true, "Email is required"],
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-      trim: true,
-      lowercase: true,
+      validate: {
+        isEmail: true,
+      },
     },
-
     password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters"],
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    isOnline: {
-      type: Boolean,
-      default: false,
-    },
-
-    lastSeen: {
-      type: Date,
-      default: null,
-    },
+    // isOnline: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: false,
+    // },
+    // lastSeen: {
+    //   type: DataTypes.DATE,
+    //   defaultValue: null,
+    // },
   },
   {
     timestamps: true,
+    tableName: "users",
   }
 );
 
-const User = mongoose.model("User", userSchema);
-
 export default User;
+
+
+
+// import mongoose from "mongoose";
+
+// const userSchema = new mongoose.Schema(
+//   {
+//     name: {
+//       type: String,
+//       required: [true, "Name is required"],
+//       trim: true,
+//       minlength: [3, "Name must be at least 3 characters"],
+//       maxlength: [50, "Name cannot exceed 50 characters"],
+//     },
+
+//     email: {
+//       type: String,
+//       required: [true, "Email is required"],
+//       unique: true,
+//       trim: true,
+//       lowercase: true,
+//     },
+
+//     password: {
+//       type: String,
+//       required: [true, "Password is required"],
+//       minlength: [6, "Password must be at least 6 characters"],
+//     },
+//     isOnline: {
+//       type: Boolean,
+//       default: false,
+//     },
+
+//     lastSeen: {
+//       type: Date,
+//       default: null,
+//     },
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+// const User = mongoose.model("User", userSchema);
+
+// export default User;

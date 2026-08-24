@@ -1,15 +1,14 @@
-import { useRef, useState } from "react";
-
+import { useRef, useState, useLayoutEffect } from "react";
 import { useChatContext } from "../../../context/ChatContext";
 import useAuth from "../../auth/hooks/useAuth";
 import useChat from "../hooks/useChat";
-
 import "../styles/ChatWindow.css";
-import { useLayoutEffect } from "react";
+import useCall from "../../call/hooks/useCall";
+import formatTime from '../../../utils/dateFormat'
 
 function ChatWindow() {
   const { user } = useAuth();
-
+  const { startCall, callStatus } = useCall();
   const {
     selectedUser,
     sendSocketMessage,
@@ -43,30 +42,20 @@ function ChatWindow() {
       return;
     }
 
-    // Save current height
-    previousScrollHeightRef.current =
-      container.scrollHeight;
+    previousScrollHeightRef.current = container.scrollHeight;
 
-    // Load older messages
     await fetchMoreMessages();
 
-    // Keep scroll position
     requestAnimationFrame(() => {
-      const newScrollHeight =
-        container.scrollHeight;
-
-      const heightDifference =
-        newScrollHeight -
-        previousScrollHeightRef.current;
-
+      const newScrollHeight = container.scrollHeight;
+      const heightDifference = newScrollHeight - previousScrollHeightRef.current;
       container.scrollTop = heightDifference;
     });
   };
+
   useLayoutEffect(() => {
     const container = containerRef.current;
-
     if (container) {
-      // Scroll to bottom when messages change
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
@@ -77,8 +66,8 @@ function ChatWindow() {
   const handleSendMessage = () => {
     if (!message.trim()) return;
 
-    const senderId = user?._id || user?.id;
-    const receiverId = selectedUser?._id;
+    const senderId = user?.id || user?._id;
+    const receiverId = selectedUser?.id || selectedUser?._id;
 
     if (!senderId || !receiverId) {
       console.error("Sender or receiver ID is missing");
@@ -101,21 +90,31 @@ function ChatWindow() {
     return (
       <div className="chat-window empty-chat">
         <h2>Select a user</h2>
-
-        <p>
-          Select a user to start chatting.
-        </p>
+        <p>Select a user to start chatting.</p>
       </div>
     );
   }
 
   return (
     <div className="chat-window">
-
       {/* Chat Header */}
       <div className="chat-header">
-        <h2>{selectedUser.name}</h2>
-        <p>{selectedUser.email}</p>
+        <div>
+          <h2>{selectedUser.name}</h2>
+          <p>{selectedUser.email}</p>
+        </div>
+
+        <button
+          onClick={() =>
+            startCall(
+              selectedUser.id || selectedUser._id,
+              selectedUser.name
+            )
+          }
+          disabled={callStatus !== "idle"}
+        >
+          🔊
+        </button>
       </div>
 
       {/* Messages */}
@@ -124,42 +123,26 @@ function ChatWindow() {
         ref={containerRef}
         onScroll={handleScroll}
       >
-        {loading && (
-          <p>Loading messages...</p>
+        {loading && <p>Loading messages...</p>}
+        {loadingMore && <p>Loading older messages...</p>}
+        {error && <p>{error}</p>}
+        {!loading && !loadingMore && !error && messages.length === 0 && (
+          <p>No messages yet. Start the conversation!</p>
         )}
 
-        {loadingMore && (
-          <p>Loading older messages...</p>
-        )}
-
-        {error && (
-          <p>{error}</p>
-        )}
-
-        {!loading &&
-          !loadingMore &&
-          !error &&
-          messages.length === 0 && (
-            <p>
-              No messages yet. Start the conversation!
-            </p>
-          )}
-
-        {messages.map((message) => {
+        {messages.map((message, index) => {
+          // ✅ FIX: Check for MySQL 'id' and MongoDB '_id', as well as relational 'senderId'
           const senderId =
             typeof message.sender === "object"
-              ? message.sender._id
-              : message.sender;
+              ? (message.sender?.id || message.sender?._id)
+              : (message.senderId || message.sender);
 
-          const currentUserId =
-            user?._id || user?.id;
-
-          const isMyMessage =
-            senderId === currentUserId;
+          const currentUserId = user?.id || user?._id;
+          const isMyMessage = senderId === currentUserId;
 
           return (
             <div
-              key={message._id}
+              key={message.id || message._id || index} // ✅ FIX: Added fallback key mapping
               className={
                 isMyMessage
                   ? "message my-message"
@@ -168,24 +151,23 @@ function ChatWindow() {
             >
               {!isMyMessage && (
                 <strong>
-                  {message.sender.name}
+                  {message.sender?.name || selectedUser.name} 
                 </strong>
               )}
 
               <div className="message-content">
                 <p>{message.message}</p>
+                <div className="message-meta">
+                  <span className="date-format">{formatTime(message.createdAt)}</span>
 
-                {isMyMessage && (
-                  <span
-                    className={`message-status ${message.status}`}
-                  >
-                    {message.status === "sent" && "✓"}
-
-                    {message.status === "delivered" && "✓✓"}
-
-                    {message.status === "read" && "✓✓"}
-                  </span>
-                )}
+                  {isMyMessage && (
+                    <span className={`message-status ${message.status}`}>
+                      {message.status === "sent" && "✓"}
+                      {message.status === "delivered" && "✓✓"}
+                      {message.status === "read" && "✓✓"}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -198,9 +180,7 @@ function ChatWindow() {
           type="text"
           placeholder="Type a message..."
           value={message}
-          onChange={(e) =>
-            setMessage(e.target.value)
-          }
+          onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleSendMessage();
@@ -208,11 +188,8 @@ function ChatWindow() {
           }}
         />
 
-        <button onClick={handleSendMessage}>
-          Send
-        </button>
+        <button onClick={handleSendMessage}>Send</button>
       </div>
-
     </div>
   );
 }

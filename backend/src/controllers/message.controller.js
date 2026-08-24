@@ -29,7 +29,6 @@ export const sendMessage = async (req, res, next) => {
 export const getMessages = async (req, res, next) => {
   try {
     const user1 = req.user._id;
-    // console.log(req)
     const { userId } = req.params;
 
     const page = parseInt(req.query.page) || 1;

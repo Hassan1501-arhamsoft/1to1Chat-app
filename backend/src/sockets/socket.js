@@ -20,13 +20,11 @@ export const initializeSocket = (httpServer) => {
     console.log("🟢 New Socket Connection:", socket.id);
 
     // =================================
-    // User comes online
+    //* User comes online
     // =================================
 
     socket.on("addNewUser", (userId) => {
-      // Remove old connection of same user
-      //! suppose a user has multiple tabs open, we want to remove the old connection of the same user and add the new one. This way, we can ensure that the user is only connected once and we can send messages to the correct socket.
-      onlineUsers = onlineUsers.filter(   
+      onlineUsers = onlineUsers.filter(
         (user) => user.userId !== userId
       );
 
@@ -41,17 +39,15 @@ export const initializeSocket = (httpServer) => {
     });
 
     // =================================
-    // User opens a chat
+    //* User opens a chat
     // =================================
 
     socket.on("openChat", async ({ userId, chatWith }) => {
       try {
-        // Remove previous active chat of this user
-        activeChats = activeChats.filter(  
+        activeChats = activeChats.filter(
           (chat) => chat.userId !== userId
         );
 
-        // Add current chat
         activeChats.push({
           userId,
           chatWith,
@@ -59,39 +55,24 @@ export const initializeSocket = (httpServer) => {
 
         console.log("💬 Active Chats:", activeChats);
 
-        // Messages from chatWith → current user
-        // are now read 
-        //! remove the await here because we don't need to wait for the result of this function, we just want to mark the messages as read in the database.
-        
-        markMessagesAsRead(chatWith, userId); 
-        // Find chatWith user
+        await markMessagesAsRead(chatWith, userId);
+
         const senderUser = onlineUsers.find(
           (user) => user.userId === chatWith
         );
-        //! testing the senderUser and receiverUser
-        // const receiverUser = onlineUsers.find(
-        //   (user) => user.userId === userId
-        // );
-        // console.log("senderUser", senderUser);
-        // console.log("receiverUser", receiverUser);
 
-        // Tell sender that their messages were read
-        //! if i remove the if condition here, it will throw an error if the senderUser is not found. So i will keep the if condition here to avoid that error.
-        if (senderUser) { 
+        if (senderUser) {
           io.to(senderUser.socketId).emit("messagesRead", {
             readerId: userId,
           });
-          
         }
-      
-
       } catch (error) {
         console.error("Open Chat Error:", error);
       }
     });
 
     // =================================
-    // User closes chat
+    //* User closes chat
     // =================================
 
     socket.on("closeChat", (userId) => {
@@ -103,86 +84,183 @@ export const initializeSocket = (httpServer) => {
     });
 
     // =================================
-    // Send 1-on-1 Message
+    //* Send 1-on-1 Message
     // =================================
 
     socket.on("sendMessage", async (data) => {
       try {
         const { sender, receiver, message } = data;
-
-        // Check whether receiver is online
+        
         const receiverUser = onlineUsers.find(
           (user) => user.userId === receiver
         );
 
-        // Check whether receiver is currently
-        // viewing sender's chat
         const receiverActiveChat = activeChats.find(
           (chat) =>
             chat.userId === receiver &&
             chat.chatWith === sender
+            
         );
 
         let messageStatus = "sent";
 
         if (receiverUser) {
-          // Receiver is online
           messageStatus = "delivered";
-
-          // Receiver is actually looking at sender's chat
+          
           if (receiverActiveChat) {
             messageStatus = "read";
+            
           }
         }
 
-        // Save message to MongoDB
-        const newMessage = await createMessage(  //!  i don't remove this await because we need the updated data from the db.
+        const newMessage = await createMessage(
           sender,
           receiver,
           message,
           messageStatus
         );
-        // console.log("💬 New Message:", newMessage);
-        // Send message to receiver if online
-        //! Because if the receiver is offline then it give undefined 
-         if (receiverUser) { 
-          io.to(receiverUser.socketId).emit("receiveMessage", {
-            success: true,
-            data: newMessage,
-          });
-        }//!
 
-        // Send message status back to sender
+        if (receiverUser) {
+          io.to(receiverUser.socketId).emit(
+            "receiveMessage",
+            {
+              success: true,
+              data: newMessage,
+            }
+          );
+        }
+
         socket.emit("messageSent", {
           success: true,
           data: newMessage,
         });
       } catch (error) {
-        console.error("Socket Send Message Error:", error);
+        console.error(
+          "Socket Send Message Error:",
+          error
+        );
       }
     });
 
+    // ==================================================
+    //!                 AUDIO CALLING
+    // ==================================================
+
     // =================================
-    // Disconnect
+    //* User A calls User B
+    // =================================
+
+    socket.on(
+      "callUser",
+      ({ callerId, receiverId, callerName, offer }) => {
+        const receiverUser = onlineUsers.find(
+          (user) => user.userId === receiverId
+        );
+
+        // Receiver is offline
+        if (!receiverUser) {
+          socket.emit("callFailed", {
+            message: "User is offline",
+          });
+
+          return;
+        }
+
+        // Send incoming call to receiver
+        io.to(receiverUser.socketId).emit(
+          "incomingCall",
+          {
+            callerId,
+            callerName,
+            offer,
+          }
+        );
+      }
+    );
+
+    // =================================
+    //* User B accepts call
+    // =================================
+
+    socket.on(
+      "acceptCall",
+      ({ callerId, answer }) => {
+        const callerUser = onlineUsers.find(
+          (user) => user.userId === callerId
+        );
+
+        if (!callerUser) {
+          return;
+        }
+
+        io.to(callerUser.socketId).emit(
+          "callAccepted",
+          {
+            answer,
+          }
+        );
+      }
+    );
+
+    // =================================
+    //* User B rejects call
+    // =================================
+
+    socket.on(
+      "rejectCall",
+      ({ callerId }) => {
+        const callerUser = onlineUsers.find(
+          (user) => user.userId === callerId
+        );
+
+        if (!callerUser) {
+          return;
+        }
+
+        io.to(callerUser.socketId).emit(
+          "callRejected"
+        );
+      }
+    );
+
+    // =================================
+    //* End Call
+    // =================================
+
+    socket.on(
+      "endCall",
+      ({ targetUserId }) => {
+        const targetUser = onlineUsers.find(
+          (user) => user.userId === targetUserId
+        );
+
+        if (!targetUser) {
+          return;
+        }
+
+        io.to(targetUser.socketId).emit(
+          "callEnded"
+        );
+      }
+    );
+
+    // =================================
+    //* Disconnect
     // =================================
 
     socket.on("disconnect", () => {
-      // Find disconnected user
       const disconnectedUser = onlineUsers.find(
         (user) => user.socketId === socket.id
       );
 
-      // disconnectingUser = userid
-
       if (disconnectedUser) {
-        // Remove from online users
         onlineUsers = onlineUsers.filter(
           (user) => user.socketId !== socket.id
         );
 
-        // Remove active chat
         activeChats = activeChats.filter(
-          (chat) => chat.userId !== disconnectedUser.userId
+          (chat) =>
+            chat.userId !== disconnectedUser.userId
         );
       }
 

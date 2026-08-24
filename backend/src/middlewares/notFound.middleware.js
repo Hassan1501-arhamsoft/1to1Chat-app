@@ -5,6 +5,7 @@ const notFoundMiddleware = (req, res, next) => {
     errorResponse(
       `Route ${req.originalUrl} not found`,
       404
+
     )
   );
 };
