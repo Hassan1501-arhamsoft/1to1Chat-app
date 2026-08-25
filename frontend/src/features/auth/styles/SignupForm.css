@@ -1,18 +1,76 @@
-.signup-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin: 0 auto;
+/* Container for the new card layout */
+.signup-container {
+  background-color: #ffffff;
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 40px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); /* Soft shadow matching the image */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.auth-link {
+/* Header styles */
+.signup-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
   text-align: center;
-  font-size: 14px;
+}
+
+.icon-container {
+  margin-bottom: 12px;
+}
+
+.signup-header h2 {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.signup-header p {
+  margin: 0;
+  font-size: 13px;
   color: #6b7280;
 }
 
+/* Form layout */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Button overrides to match the vibrant blue in the image 
+   (Assuming your <Button /> component renders a standard <button> tag) */
+.signup-form button {
+  background-color: #4f46e5; /* Match the icon color */
+  color: white;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.signup-form button:hover {
+  background-color: #4338ca;
+}
+
+/* Auth link styles */
+.auth-link {
+  text-align: center;
+  font-size: 13px;
+  color: #4b5563;
+  margin-top: 4px;
+}
+
 .auth-link a {
-  color: #2563eb;
+  color: #4f46e5;
   font-weight: 600;
   text-decoration: none;
 }
