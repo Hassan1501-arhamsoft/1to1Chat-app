@@ -18,11 +18,13 @@ export const CallProvider = ({ children }) => {
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteAudioRef = useRef(null);
+  const localVideoRef = useRef(null);
 
   const [callStatus, setCallStatus] = useState("idle");
   const [incomingCall, setIncomingCall] = useState(null);
   const [callUserId, setCallUserId] = useState(null);
   const [callUserName, setCallUserName] = useState("");
+  const [callType, setCallType] = useState("audio");
 
   // ==========================================
   // Create WebRTC connection
@@ -77,18 +79,21 @@ export const CallProvider = ({ children }) => {
   // Get microphone
   // ==========================================
 
-  const getLocalAudio = async () => {
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
+  const getLocalStream = async (isVideo) => {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: isVideo,
+  });
 
-    localStreamRef.current = stream;
+  localStreamRef.current = stream;
 
-    return stream;
-  };
+  // Attach local video for the caller to see themselves
+  if (isVideo && localVideoRef.current) {
+    localVideoRef.current.srcObject = stream;
+  }
 
+  return stream;
+};
   // ==========================================
   // Wait for ICE gathering
   // ==========================================
@@ -130,7 +135,8 @@ export const CallProvider = ({ children }) => {
 
   const startCall = async (
     receiverId,
-    receiverName
+    receiverName,
+    type = "audio"
   ) => {
     if (!socket || !user) {
       return;
@@ -139,8 +145,8 @@ export const CallProvider = ({ children }) => {
     try {
       const currentUserId = user._id || user.id;
 
-      const stream = await getLocalAudio();
-
+      setCallType(type);
+      const stream = await getLocalStream(type === "video");
       const peerConnection = createPeerConnection();
 
       stream.getTracks().forEach((track) => {
@@ -167,6 +173,7 @@ export const CallProvider = ({ children }) => {
         callerName: user.name,
         offer:
           peerConnection.localDescription,
+          callType: type,
       });
 
       setCallUserId(receiverId);
@@ -192,7 +199,8 @@ export const CallProvider = ({ children }) => {
     }
 
     try {
-      const stream = await getLocalAudio();
+      setCallType(incomingCall.callType);
+      const stream = await getLocalStream(incomingCall.callType === "video")
 
       const peerConnection =
         createPeerConnection();
@@ -328,11 +336,13 @@ export const CallProvider = ({ children }) => {
       callerId,
       callerName,
       offer,
+      callType
     }) => {
       setIncomingCall({
         callerId,
         callerName,
         offer,
+        callType
       });
 
       setCallStatus("incoming");
@@ -457,6 +467,8 @@ export const CallProvider = ({ children }) => {
         acceptCall,
         rejectCall,
         endCall,
+        callType,
+        localVideoRef,
       }}
     >
       {children}

@@ -15,9 +15,9 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <SocketContextProvider>
           <ChatProvider>
-             <CallProvider>
+            <CallProvider>
              <App />
-              </CallProvider>
+            </CallProvider>
           </ChatProvider>
         </SocketContextProvider>
       </AuthProvider>

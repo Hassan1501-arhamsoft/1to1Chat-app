@@ -103,6 +103,7 @@ function ChatWindow() {
           <h2>{selectedUser.name}</h2>
           <p>{selectedUser.email}</p>
         </div>
+        <div className="chat-calling-btn">
 
         <button
           onClick={() =>
@@ -115,6 +116,15 @@ function ChatWindow() {
         >
           🔊
         </button>
+        <button
+            onClick={() => startCall(selectedUser.id || selectedUser._id, selectedUser.name, "video")}
+            disabled={callStatus !== "idle"}
+            style={{ marginLeft: "10px" }}
+          >
+            📹
+          </button>
+        </div>
+
       </div>
 
       {/* Messages */}

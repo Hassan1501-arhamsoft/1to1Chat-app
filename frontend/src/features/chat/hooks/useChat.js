@@ -7,7 +7,7 @@ import useAuth from "../../auth/hooks/useAuth";
 
 function useChat() {
   const { selectedUser } = useChatContext();
-  const {  onlineUsers } = useSocket();
+  // const {  onlineUsers } = useSocket();
   const { socket } = useSocket();
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
@@ -174,53 +174,53 @@ const fetchMoreMessages = async () => {
   // when selected user comes online
   // ==========================================
 
-  useEffect(() => {
-    if (!selectedUser || !user) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!selectedUser || !user) {
+  //     return;
+  //   }
 
-    const selectedUserIsOnline = onlineUsers.some(
-      (onlineUser) =>
-        onlineUser.userId === selectedUser._id 
-    );
+  //   const selectedUserIsOnline = onlineUsers.some(
+  //     (onlineUser) =>
+  //       onlineUser.userId === selectedUser._id 
+  //   );
 
-    // Selected user is offline
-    if (!selectedUserIsOnline) {
-      return;
-    }
+  //   // Selected user is offline
+  //   if (!selectedUserIsOnline) {
+  //     return;
+  //   }
 
-    const currentUserId = user._id || user.id;
+  //   const currentUserId = user._id || user.id;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMessages((oldMessages) =>
-      oldMessages.map((message) => {
-        const senderId =
-          typeof message.sender === "object"
-            ? message.sender._id || message.sender.id 
-            : message.sender;
+  //   // eslint-disable-next-line react-hooks/set-state-in-effect
+  //   setMessages((oldMessages) =>
+  //     oldMessages.map((message) => {
+  //       const senderId =
+  //         typeof message.sender === "object"
+  //           ? message.sender._id || message.sender.id 
+  //           : message.sender;
 
-        const receiverId =
-          typeof message.receiver === "object"
-            ? message.receiver._id || message.receiver.id 
-            : message.receiver;
+  //       const receiverId =
+  //         typeof message.receiver === "object"
+  //           ? message.receiver._id || message.receiver.id 
+  //           : message.receiver;
 
-        // Only change my messages
-        // sent to the selected user
-        if (
-          senderId === currentUserId &&
-          receiverId === selectedUser._id || selectedUser.id &&
-          message.status === "sent"
-        ) {
-          return {
-            ...message,
-            status: "delivered",
-          };
-        }
+  //       // Only change my messages
+  //       // sent to the selected user
+  //       if (
+  //         senderId === currentUserId &&
+  //         receiverId === selectedUser._id || selectedUser.id &&
+  //         message.status === "sent"
+  //       ) {
+  //         return {
+  //           ...message,
+  //           status: "delivered",
+  //         };
+  //       }
 
-        return message;
-      })
-    );
-  }, [onlineUsers, selectedUser, user]);
+  //       return message;
+  //     })
+  //   );
+  // }, [onlineUsers, selectedUser, user]);
 
  return {
   messages,

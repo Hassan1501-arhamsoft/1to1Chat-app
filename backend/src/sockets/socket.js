@@ -12,6 +12,8 @@ export const initializeSocket = (httpServer) => {
   const io = new Server(httpServer, {
     cors: {
       origin: "http://localhost:5173",
+      // origin: "*",
+
       methods: ["GET", "POST"],
     },
   });
@@ -36,6 +38,7 @@ export const initializeSocket = (httpServer) => {
       console.log("👥 Online Users:", onlineUsers);
 
       io.emit("getOnlineUsers", onlineUsers);
+     
     });
 
     // =================================
@@ -56,11 +59,11 @@ export const initializeSocket = (httpServer) => {
         console.log("💬 Active Chats:", activeChats);
 
         await markMessagesAsRead(chatWith, userId);
-
+        
         const senderUser = onlineUsers.find(
           (user) => user.userId === chatWith
         );
-
+        
         if (senderUser) {
           io.to(senderUser.socketId).emit("messagesRead", {
             readerId: userId,
@@ -152,7 +155,7 @@ export const initializeSocket = (httpServer) => {
 
     socket.on(
       "callUser",
-      ({ callerId, receiverId, callerName, offer }) => {
+      ({ callerId, receiverId, callerName, offer, callType }) => {
         const receiverUser = onlineUsers.find(
           (user) => user.userId === receiverId
         );
@@ -173,6 +176,7 @@ export const initializeSocket = (httpServer) => {
             callerId,
             callerName,
             offer,
+            callType,
           }
         );
       }

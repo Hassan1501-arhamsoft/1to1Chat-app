@@ -222,3 +222,7 @@
   color:  rgb(64, 120, 4);
   font-size: 12px;
 }
+
+.chat-calling-btn{
+  display: flex;
+}
