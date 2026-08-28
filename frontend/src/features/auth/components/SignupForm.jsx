@@ -3,12 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../../../components/Input/Input";
 import Button from "../../../components/Button/Button";
 import { registerUser } from "../services/auth.service";
-import useAuth from "../hooks/useAuth";
 import "../styles/SignupForm.css";
+
 
 function SignupForm() {
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -33,13 +32,8 @@ function SignupForm() {
       setLoading(true);
 
       const response = await registerUser(formData);
-
-      login(
-        response.data.user,
-        response.data.token
-      );
-
-      navigate("/dashboard");
+      alert(response.message)
+      navigate("/verify-otp", { state: { email: formData.email } });
     } catch (error) {
       console.error(error);
       alert(

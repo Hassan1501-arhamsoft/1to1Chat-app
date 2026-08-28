@@ -1,145 +1,92 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
+import sendEmail from "../utils/sendEmail.js"; 
+
+// Helper to generate a 6-digit OTP
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 export const registerUserService = async (userData) => {
   const { name, email, password } = userData;
-
-  const existingUser = await User.findOne({ where: { email } });
-  if (existingUser) {
-    throw new Error("Email already exists.");
-  }
-
+  let user = await User.findOne({ where: { email } });
+  
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+  const otp = generateOTP();
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
+  if (user) {
+    if (user.isVerified) throw new Error("Email already exists.");
+    user.name = name;
+    user.password = hashedPassword;
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+  } else {
+    user = await User.create({
+      name, email, password: hashedPassword, otp, otpExpires, isVerified: false
+    });
+  }
 
-  const token = generateToken({
-    userId: user.id,
-  });
+  const emailTemplate = `<h2>Your ChatApp OTP is: ${otp}</h2><p>This code expires in 10 minutes.</p>`;
+  await sendEmail(user.email, "Your Verification Code", emailTemplate);
 
-  return {
-    token,
-    user: {
-      id: user.id,
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-    },
-  };
+  return { email: user.email, message: "OTP sent to your email." };
 };
 
 export const loginUserService = async (email, password) => {
   const user = await User.findOne({ where: { email } });
-  if (!user) {
-    throw new Error("Invalid email or password.");
-  }
+  if (!user) throw new Error("Invalid email or password.");
+
+  // Still enforce that they verified their email when they signed up
+  if (!user.isVerified) throw new Error("Please verify your email first.");
 
   const isPasswordMatched = await bcrypt.compare(password, user.password);
-  if (!isPasswordMatched) {
-    throw new Error("Invalid email or password.");
-  }
+  if (!isPasswordMatched) throw new Error("Invalid email or password.");
 
-  const token = generateToken({
-    userId: user.id,
-  });
+  // CHECK: Does the user have 2FA enabled?
+  if (user.isTwoFactorEnabled) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
 
+    const emailTemplate = `<h2>Your Login OTP is: ${otp}</h2><p>This code expires in 10 minutes.</p>`;
+    await sendEmail(user.email, "Your Login Code", emailTemplate);
+
+    // Return a flag telling the frontend that 2FA is required
+    return { requires2FA: true, email: user.email, message: "OTP sent to your email." };
+  } 
+  
+  // IF 2FA IS OFF: Log them in directly
+  const token = generateToken({ userId: user.id });
   return {
+    requires2FA: false, // Flag telling frontend to skip OTP
     token,
-    user: {
-      id: user.id,
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-    },
+    user: { id: user.id, name: user.name, email: user.email,isTwoFactorEnabled: user.isTwoFactorEnabled},
   };
 };
 
+export const verifyOtpService = async (email, otp) => {
+  const user = await User.findOne({ where: { email } });
+  
+  if (!user || user.otp !== otp) {
+    throw new Error("Invalid OTP.");
+  }
+  if (user.otpExpires < new Date()) {
+    throw new Error("OTP has expired. Please log in again to request a new one.");
+  }
 
+  // Clear OTP and verify
+  user.isVerified = true;
+  user.otp = null;
+  user.otpExpires = null;
+  await user.save();
 
+  const token = generateToken({ userId: user.id });
 
-
-
-
-
-
-
-// import bcrypt from "bcrypt";
-// import User from "../models/user.model.js";
-// import generateToken from "../utils/generateToken.js";
-
-// export const registerUserService = async (userData) => {
-//   const { name, email, password } = userData;
-
-//   // Check existing user
-//   const existingUser = await User.findOne({ email }); //! this await is necessary to ensure we check for existing users before proceeding with registration.
-
-//   if (existingUser) {
-//     throw new Error("Email already exists.");
-//   }
-
-//   // Hash password
-//   const salt = await bcrypt.genSalt(10); //! this await is necessary to ensure we generate a salt before hashing the password.
-//   const hashedPassword = await bcrypt.hash(password, salt); //! this await is necessary to ensure we hash the password before saving the user.
-
-//   // Create user
-//   const user = await User.create({  //! this await is necessary to ensure we create the user before generating a token.
-//     name,
-//     email,
-//     password: hashedPassword,
-//   });
-
-//   // Generate JWT
-//   const token = generateToken({
-//     userId: user._id,
-//   });
-
-//   // Return response data
-//   return {
-//     token,
-//     user: {
-//       id: user._id,
-//       name: user.name,
-//       email: user.email,
-//     },
-//   };
-// };
-
-// export const loginUserService = async (email, password) => {
-//   // Find user
-//   const user = await User.findOne({ email }); //! this await is necessary to ensure we find the user before comparing passwords.
-
-//   if (!user) {
-//     throw new Error("Invalid email or password.");
-//   }
-
-//   // Compare password
-//   const isPasswordMatched = await bcrypt.compare( //! this await is necessary to ensure we compare the passwords before proceeding with login.
-//     password,
-//     user.password
-//   );
-
-//   if (!isPasswordMatched) {
-//     throw new Error("Invalid email or password.");
-//   }
-
-//   // Generate JWT
-//   const token = generateToken({
-//     userId: user._id,
-//   });
-
-//   // Return response data
-//   return {
-//     token,
-//     user: {
-//       id: user._id,
-//       name: user.name,
-//       email: user.email,
-//     },
-//   };
-// };
+  return {
+    token,
+    user: { id: user.id, name: user.name, email: user.email ,isTwoFactorEnabled: user.isTwoFactorEnabled },
+  };
+};

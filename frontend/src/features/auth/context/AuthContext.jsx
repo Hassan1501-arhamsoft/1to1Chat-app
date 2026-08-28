@@ -12,10 +12,18 @@ function AuthProvider({ children }) {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
 
-    if (storedUser && storedToken) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
+    // Strict check to ensure storedUser is not the literal string "undefined"
+    if (storedUser && storedUser !== "undefined" && storedToken) {
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+      // eslint-disable-next-line no-unused-vars
+      } catch (error) {
+        console.error("Failed to parse user from local storage");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
 
     setLoading(false);

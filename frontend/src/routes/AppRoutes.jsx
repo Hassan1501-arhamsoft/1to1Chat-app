@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../features/auth/pages/LoginPage";
 import SignupPage from "../features/auth/pages/SignupPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
+import VerifyOtp from "../features/auth/pages/VerifyOtp";
 
 
 function AppRoutes() {
@@ -15,6 +16,7 @@ function AppRoutes() {
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+       <Route path="/verify-otp" element={<VerifyOtp />} />
       </Route>
 
       {/* Protected Routes */}

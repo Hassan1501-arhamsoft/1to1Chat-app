@@ -18,7 +18,7 @@ const sequelize = new Sequelize(
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true }); // Auto-creates or updates tables
+    await sequelize.sync(); // Auto-creates or updates tables
     console.log("✅ MySQL Connected & Synchronized");
   } catch (error) {
     console.error("❌ Unable to connect to MySQL:", error.message);

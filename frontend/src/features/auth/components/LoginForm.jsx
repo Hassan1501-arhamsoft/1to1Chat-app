@@ -45,13 +45,19 @@ function LoginForm() {
       setLoading(true);
 
       const response = await loginUser(formData);
+      const result = response.data;
+   
+      if (result.requires2FA) {
+        // User has 2FA ON -> Go to OTP page
+        alert(result.message || "OTP sent to your email.");
+        navigate("/verify-otp", { state: { email: formData.email } });
+      } else {
+        // User has 2FA OFF -> Log in immediately
+        login(result.user, result.token);
+        navigate("/dashboard");
+      }
 
-      login(
-        response.data.user,
-        response.data.token
-      );
-
-      navigate("/dashboard");
+      
     } catch (error) {
       console.error(error);
 

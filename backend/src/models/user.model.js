@@ -28,14 +28,24 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // isOnline: {
-    //   type: DataTypes.BOOLEAN,
-    //   defaultValue: false,
-    // },
-    // lastSeen: {
-    //   type: DataTypes.DATE,
-    //   defaultValue: null,
-    // },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+    otp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    otpExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    isTwoFactorEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false, // 2FA is OFF by default
+      allowNull: false,
+    },
   },
   {
     timestamps: true,
