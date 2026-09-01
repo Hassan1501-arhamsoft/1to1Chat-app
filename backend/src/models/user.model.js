@@ -46,6 +46,10 @@ const User = sequelize.define(
       defaultValue: false, // 2FA is OFF by default
       allowNull: false,
     },
+    twoFactorSecret: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

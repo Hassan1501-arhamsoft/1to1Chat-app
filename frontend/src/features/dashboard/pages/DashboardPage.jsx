@@ -1,75 +1,132 @@
+import { useState } from "react";
 import UsersPage from "../../users/pages/UsersPage";
 import ChatWindow from "../../chat/components/ChatWindow";
 import api from "../../../api/axios";
 import useAuth from "../../auth/hooks/useAuth";
-
 import "../styles/DashboardPage.css";
-import { useState } from "react";
 
 function DashboardPage() {
-  const { logout, user } = useAuth();
+  const { logout, user, login } = useAuth();
+  
+  // 2FA States
   const [is2FAEnabled, setIs2FAEnabled] = useState(user?.isTwoFactorEnabled || false);
-const handleToggle2FA = async () => {
+  const [setupMode, setSetupMode] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState(null);
+  const [setupToken, setSetupToken] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleStartSetup = async () => {
     try {
-      const newValue = !is2FAEnabled;
-      
-      // Call the backend endpoint we created earlier
-      await api.put("/auth/toggle-2fa", {
-        email: user.email,
-        isTwoFactorEnabled: newValue
-      });
-      
-      setIs2FAEnabled(newValue);
-      alert(`2FA (OTP Login) is now ${newValue ? 'Enabled' : 'Disabled'}`);
-      
-      // Optional: Update your local AuthContext user object here if needed
+      setLoading(true);
+      const response = await api.post("/auth/2fa/generate", { email: user.email });
+      setQrCodeData(response.data.data); 
+      setSetupMode(true);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error(error);
-      alert("Failed to update 2FA settings.");
+      alert("Failed to start 2FA setup.");
+    } finally {
+      setLoading(false);
     }
   };
-  const handleLogout = () => {
-    logout();
+
+  const handleConfirmSetup = async () => {
+    try {
+      setLoading(true);
+      const response = await api.post("/auth/2fa/verify-setup", {
+        email: user.email,
+        token: setupToken,
+        secret: qrCodeData.secret
+      });
+      
+      setIs2FAEnabled(true);
+      setSetupMode(false);
+      alert(response.message);
+      
+      login({ ...user, isTwoFactorEnabled: true }, localStorage.getItem("token"));
+    } catch (error) {
+      alert(error.response?.data?.message || "Invalid code. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    if (!window.confirm("Are you sure you want to disable Two-Factor Authentication?")) return;
+    
+    try {
+      setLoading(true);
+      await api.put("/auth/2fa/disable", { email: user.email });
+      setIs2FAEnabled(false);
+      alert("Authenticator disabled.");
+      
+      login({ ...user, isTwoFactorEnabled: false }, localStorage.getItem("token"));
+    // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      alert("Failed to disable 2FA.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="dashboard">
-
-      {/* Left side - Users */}
       <div className="users-section">
-
+        
         <div className="users-header">
-          <h2>{user?.name}</h2>
-          
+          <div className="users-header-top">
+            <h2>{user?.name}</h2>
+            <button className="logout-button" onClick={logout}>Logout</button>
+          </div>
 
-          <button
-            className="logout-button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-          <div className="two-factor-toggle" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label style={{ fontSize: "14px", cursor: "pointer" }}>
-            <input 
-              type="checkbox" 
-              checked={is2FAEnabled} 
-              onChange={handleToggle2FA} 
-              style={{ marginRight: "5px", cursor: "pointer" }}
-            />
-            Enable 2FA (OTP)
-          </label>
-        </div>
+          <div className="two-factor-manage">
+            
+            {!is2FAEnabled && !setupMode && (
+              <button className="btn-enable-2fa" onClick={handleStartSetup} disabled={loading}>
+                {loading ? "Loading..." : "Enable Authenticator App"}
+              </button>
+            )}
+
+            {is2FAEnabled && (
+              <button className="btn-disable-2fa" onClick={handleDisable2FA} disabled={loading}>
+                {loading ? "Loading..." : "Disable Authenticator App"}
+              </button>
+            )}
+
+            {setupMode && qrCodeData && (
+              <div className="qr-setup-container">
+                <h4>Setup Authenticator</h4>
+                <p className="qr-instruction-text">1. Scan this QR code with Google Authenticator or Authy.</p>
+                <img src={qrCodeData.qrCodeUrl} alt="QR Code" className="qr-image" />
+                <p className="qr-instruction-text">Or enter manually: <strong>{qrCodeData.secret}</strong></p>
+                
+                <p className="qr-instruction-text">2. Enter the 6-digit code from the app:</p>
+                <div className="qr-action-row">
+                  <input 
+                    type="text" 
+                    maxLength="6"
+                    value={setupToken} 
+                    onChange={(e) => setSetupToken(e.target.value)} 
+                    placeholder="000000"
+                    className="qr-input"
+                  />
+                  <button className="btn-confirm" onClick={handleConfirmSetup} disabled={loading || setupToken.length < 6}>
+                    Confirm
+                  </button>
+                  <button className="btn-cancel" onClick={() => setSetupMode(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <UsersPage />
-
       </div>
 
-      {/* Right side - Chat */}
       <div className="chat-section">
         <ChatWindow />
       </div>
-
     </div>
   );
 }

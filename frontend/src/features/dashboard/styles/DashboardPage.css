@@ -1,59 +1,45 @@
 /* ========================================
    Dashboard Layout
 ======================================== */
-
 .dashboard {
   width: 100%;
   height: 100vh;
   display: flex;
   overflow: hidden;
-
   background: #f5f7fb;
   color: #1f2937;
 }
 
-
 /* ========================================
    Left - Users Section
 ======================================== */
-
 .users-section {
   width: 340px;
   min-width: 280px;
   height: 100%;
-
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
-
   display: flex;
   flex-direction: column;
-
   overflow: hidden;
 }
-
 
 /* ========================================
    Right - Chat Section
 ======================================== */
-
 .chat-section {
   flex: 1;
   height: 100%;
   min-width: 0;
-
   background: #f8fafc;
-
   display: flex;
   flex-direction: column;
-
   overflow: hidden;
 }
-
 
 /* ========================================
    Modern Scrollbars
 ======================================== */
-
 .users-section::-webkit-scrollbar,
 .chat-section::-webkit-scrollbar {
   width: 6px;
@@ -75,63 +61,27 @@
   background: #9ca3af;
 }
 
-
 /* ========================================
-   Responsive - Tablet
+   Header & 2FA Management
 ======================================== */
-
-@media (max-width: 900px) {
-  .users-section {
-    width: 300px;
-    min-width: 260px;
-  }
-}
-
-
-/* ========================================
-   Responsive - Mobile
-======================================== */
-
-@media (max-width: 700px) {
-  .dashboard {
-    position: relative;
-  }
-
-  .users-section {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  .chat-section {
-    width: 100%;
-    min-width: 100%;
-  }
-}
-
-
-/* ========================================
-   Small Mobile
-======================================== */
-
-@media (max-width: 480px) {
-  .users-section {
-    width: 100%;
-  }
-
-  .chat-section {
-    width: 100%;
-  }
-}
 .users-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
   padding: 15px;
   border-bottom: 1px solid #ddd;
   background-color: #fff;
 }
 
-.users-header h2 {
+.users-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.users-header-top h2 {
   margin: 0;
   font-size: 20px;
 }
@@ -147,4 +97,128 @@
 
 .logout-button:hover {
   background-color: #222;
+}
+
+.two-factor-manage {
+  background: #f3f4f6;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-enable-2fa {
+  cursor: pointer;
+  padding: 8px 12px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.btn-disable-2fa {
+  cursor: pointer;
+  padding: 8px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.qr-setup-container {
+  margin-top: 10px;
+  padding: 15px;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+}
+
+.qr-setup-container h4 {
+  margin: 0 0 10px 0;
+}
+
+.qr-instruction-text {
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+.qr-instruction-text strong{
+  font-size: 7px;
+}
+
+.qr-image {
+  width: 150px;
+  height: 150px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.qr-action-row {
+  display: flex;
+  gap: 10px;
+}
+
+.qr-input {
+  padding: 8px;
+  width: 80px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.btn-confirm {
+  cursor: pointer;
+  padding: 8px 12px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  cursor: pointer;
+  padding: 8px 12px;
+  background: #9ca3af;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+/* ========================================
+   Responsive 
+======================================== */
+@media (max-width: 900px) {
+  .users-section {
+    width: 300px;
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard {
+    position: relative;
+  }
+  .users-section {
+    width: 100%;
+    min-width: 100%;
+  }
+  .chat-section {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .users-section {
+    width: 100%;
+  }
+  .chat-section {
+    width: 100%;
+  }
 }

@@ -18,6 +18,7 @@ export const CallProvider = ({ children }) => {
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteAudioRef = useRef(null);
+  const remoteVideoRef = useRef(null);
   const localVideoRef = useRef(null);
 
   const [callStatus, setCallStatus] = useState("idle");
@@ -25,6 +26,15 @@ export const CallProvider = ({ children }) => {
   const [callUserId, setCallUserId] = useState(null);
   const [callUserName, setCallUserName] = useState("");
   const [callType, setCallType] = useState("audio");
+
+
+useEffect(() => {
+    if (callStatus === "calling" || callStatus === "connecting" || callStatus === "connected") {
+      if (localVideoRef.current && localStreamRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+      }
+    }
+  }, [callStatus]);
 
   // ==========================================
   // Create WebRTC connection
@@ -35,9 +45,11 @@ export const CallProvider = ({ children }) => {
       new RTCPeerConnection();
 
     peerConnection.ontrack = (event) => {
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = event.streams[0];
+      }
       if (remoteAudioRef.current) {
-        remoteAudioRef.current.srcObject =
-          event.streams[0];
+        remoteAudioRef.current.srcObject = event.streams[0];
       }
     };
 
@@ -88,9 +100,9 @@ export const CallProvider = ({ children }) => {
   localStreamRef.current = stream;
 
   // Attach local video for the caller to see themselves
-  if (isVideo && localVideoRef.current) {
-    localVideoRef.current.srcObject = stream;
-  }
+  // if (isVideo && localVideoRef.current) {
+  //   localVideoRef.current.srcObject = stream;
+  // }
 
   return stream;
 };
@@ -126,6 +138,7 @@ export const CallProvider = ({ children }) => {
         "icegatheringstatechange",
         checkState
       );
+      
     });
   };
 
@@ -463,6 +476,7 @@ export const CallProvider = ({ children }) => {
         incomingCall,
         callUserName,
         remoteAudioRef,
+        remoteVideoRef,
         startCall,
         acceptCall,
         rejectCall,

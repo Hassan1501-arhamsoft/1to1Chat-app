@@ -18,6 +18,7 @@ function CallUI() {
   rejectCall,
   endCall,
   remoteAudioRef,
+  remoteVideoRef,
   localVideoRef,
   callType,
 } = useCall();
@@ -90,7 +91,8 @@ function CallUI() {
       {callType === "video" ? (
         <div className="video-container" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
           <video ref={localVideoRef} autoPlay muted style={{ width: '250px', background: '#000', borderRadius: '8px' }} />
-          <video ref={remoteAudioRef} autoPlay style={{ width: '250px', background: '#000', borderRadius: '8px' }} />
+          <video ref={remoteVideoRef} autoPlay style={{ width: '250px', background: '#000', borderRadius: '8px' }} />
+          
         </div>
       ) : (
         <audio ref={remoteAudioRef} autoPlay />
