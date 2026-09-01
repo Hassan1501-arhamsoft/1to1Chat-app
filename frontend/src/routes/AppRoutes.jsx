@@ -5,7 +5,9 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import SignupPage from "../features/auth/pages/SignupPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import VerifyOtp from "../features/auth/pages/VerifyOtp";
-
+import ForgotPassword from "../features/auth/pages/ForgotPassword";
+import ResetPassword from "../features/auth/pages/ResetPassword";
+import NotFound from "../features/notfound/pages/NotFound";
 
 function AppRoutes() {
   return (
@@ -17,6 +19,8 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
        <Route path="/verify-otp" element={<VerifyOtp />} />
+       <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* Protected Routes */}
@@ -25,7 +29,7 @@ function AppRoutes() {
       </Route>
 
       {/* 404 */}
-      <Route path="*" element={<h1>404 | Page Not Found</h1>} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

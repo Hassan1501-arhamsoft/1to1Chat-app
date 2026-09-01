@@ -145,3 +145,39 @@ export const disable2FAService = async (email) => {
 
   return { message: "Authenticator disabled." };
 };
+
+// --- 3. PASSWORD MANAGEMENT ---
+
+export const forgotPasswordService = async (email) => {
+  const user = await User.findOne({ where: { email } });
+  if (!user) throw new Error("No account found with this email.");
+
+  const otp = generateOTP(); 
+  user.otp = otp;
+  user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  await user.save();
+
+  const emailTemplate = `<h2>Password Reset</h2><p>Your password reset code is: <strong>${otp}</strong></p><p>This code expires in 10 minutes.</p>`;
+  await sendEmail(user.email, "Password Reset Code", emailTemplate);
+
+  return { message: "Reset code sent to your email." };
+};
+
+export const resetPasswordService = async (email, otp, newPassword) => {
+  const user = await User.findOne({ where: { email } });
+  
+  if (!user) throw new Error("User not found.");
+  if (user.otp !== otp || new Date() > user.otpExpires) {
+    throw new Error("Invalid or expired reset code.");
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(newPassword, salt);
+  
+  // Clear the OTP fields after successful reset
+  user.otp = null;
+  user.otpExpires = null;
+  await user.save();
+
+  return { message: "Password updated successfully. You can now log in." };
+};

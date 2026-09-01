@@ -4,7 +4,9 @@ import {
   verifyOtpService,
   generate2FAService,
   verify2FASetupService,
-  disable2FAService 
+  disable2FAService,
+  forgotPasswordService,
+  resetPasswordService
 } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
 
@@ -65,6 +67,25 @@ export const disable2FA = async (req, res) => {
     const { email } = req.body;
     const result = await disable2FAService(email);
     return successResponse(res, "2FA disabled.", result);
+  } catch (error) {
+    return errorResponse(res, error.message, 400);
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const result = await forgotPasswordService(req.body.email);
+    return successResponse(res, result.message, null, 200);
+  } catch (error) {
+    return errorResponse(res, error.message, 400);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const result = await resetPasswordService(email, otp, newPassword);
+    return successResponse(res, result.message, null, 200);
   } catch (error) {
     return errorResponse(res, error.message, 400);
   }
