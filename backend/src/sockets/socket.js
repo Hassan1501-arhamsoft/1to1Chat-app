@@ -58,7 +58,7 @@ export const initializeSocket = (httpServer) => {
 
         console.log("💬 Active Chats:", activeChats);
 
-        await markMessagesAsRead(chatWith, userId);
+        markMessagesAsRead(chatWith, userId);
         
         const senderUser = onlineUsers.find(
           (user) => user.userId === chatWith

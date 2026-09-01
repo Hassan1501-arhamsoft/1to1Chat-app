@@ -11,6 +11,7 @@ function ChatWindow() {
   const { startCall, callStatus } = useCall();
   const {
     selectedUser,
+    setSelectedUser,
     sendSocketMessage,
   } = useChatContext();
 
@@ -99,9 +100,18 @@ function ChatWindow() {
     <div className="chat-window">
       {/* Chat Header */}
       <div className="chat-header">
-        <div>
-          <h2>{selectedUser.name}</h2>
-          <p>{selectedUser.email}</p>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button 
+            className="mobile-back-btn " 
+            onClick={() => setSelectedUser(null)}
+          >
+            ⬅ 
+          </button>
+          <div>
+            <h2>{selectedUser.name}</h2>
+            <p>{selectedUser.email}</p>
+          </div>
         </div>
         <div className="chat-calling-btn">
 

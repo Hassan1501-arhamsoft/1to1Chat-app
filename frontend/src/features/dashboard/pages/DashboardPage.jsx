@@ -4,8 +4,9 @@ import ChatWindow from "../../chat/components/ChatWindow";
 import api from "../../../api/axios";
 import useAuth from "../../auth/hooks/useAuth";
 import "../styles/DashboardPage.css";
-
+import { useChatContext } from "../../../context/ChatContext";
 function DashboardPage() {
+  const { selectedUser } = useChatContext();
   const { logout, user, login } = useAuth();
   
   // 2FA States
@@ -67,9 +68,10 @@ function DashboardPage() {
       setLoading(false);
     }
   };
+  const isChatActive = !!selectedUser;
 
   return (
-    <div className="dashboard">
+    <div className={`dashboard ${isChatActive ? "show-chat" : ""}`}>
       <div className="users-section">
         
         <div className="users-header">

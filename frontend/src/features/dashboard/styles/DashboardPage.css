@@ -222,3 +222,37 @@
     width: 100%;
   }
 }
+
+@media (max-width: 900px) {
+  .users-section {
+    width: 300px;
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard {
+    position: relative;
+    width: 100%;
+  }
+  
+  .users-section {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .chat-section {
+    width: 100%;
+    min-width: 100%;
+    display: none; /* Hidden by default on mobile */
+  }
+
+  /* When a chat is active, hide users and show chat */
+  .dashboard.show-chat .users-section {
+    display: none;
+  }
+  
+  .dashboard.show-chat .chat-section {
+    display: flex; 
+  }
+}

@@ -54,39 +54,29 @@
 }
 
 /* Audio Call Button */
-.chat-header button {
+.chat-calling-btn button {
   width: 42px;
   height: 42px;
-
   border: none;
   border-radius: 50%;
-
   background-color: #017e18db;
-
   color: white;
-
   font-size: 19px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-
   transition: 0.2s;
 }
 
-.chat-header button:hover {
+.chat-calling-btn button:hover {
   background-color: #1ebe5d;
-
   transform: scale(1.05);
 }
 
-.chat-header button:disabled {
+.chat-calling-btn button:disabled {
   background-color: #ccc;
-
   cursor: not-allowed;
-
   transform: none;
 }
 
@@ -225,4 +215,29 @@
 
 .chat-calling-btn{
   display: flex;
+}
+
+/* ========================================
+   Mobile Back Button
+======================================== */
+.mobile-back-btn {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: 1px solid #4f46e5;
+  color: #4f46e5;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 50%;
+}
+
+.mobile-back-btn:hover {
+  background: #e0e7ff;
+}
+
+@media (max-width: 700px) {
+  .mobile-back-btn {
+    display: block; /* Show only on screens 700px or smaller */
+  }
 }
