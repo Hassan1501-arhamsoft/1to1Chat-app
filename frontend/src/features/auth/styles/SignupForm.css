@@ -84,3 +84,29 @@
   margin-top: 5px;
   margin-bottom: 5px;
 }
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #888;
+}
+
+.auth-divider::before, 
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.auth-divider span {
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}

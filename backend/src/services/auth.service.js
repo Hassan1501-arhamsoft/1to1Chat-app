@@ -4,10 +4,10 @@ import qrcode from "qrcode";
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
-
+// import crypto from "crypto"; // <-- ADDED (built-in Node module)
+// import { OAuth2Client } from "google-auth-library";
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
-
-
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // --- 1. REGISTRATION & LOGIN ---
 
 export const registerUserService = async (userData) => {
@@ -105,6 +105,50 @@ export const verifyOtpService = async (email, otp) => {
   };
 };
 
+// export const googleAuthService = async (token) => {
+//   if (!token) throw new Error("No Google token provided.");
+
+//   // Verify token directly with Google
+//   const ticket = await googleClient.verifyIdToken({
+//     idToken: token,
+//     audience: process.env.GOOGLE_CLIENT_ID,
+//   });
+
+//   const { email, name } = ticket.getPayload();
+
+//   let user = await User.findOne({ where: { email } });
+
+//   if (!user) {
+//     // Generate a highly secure random password for OAuth users to satisfy DB constraints
+//     const randomPassword = crypto.randomBytes(16).toString("hex");
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+//     user = await User.create({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       isVerified: true, // Google verifies the email for us
+//     });
+//   } else if (!user.isVerified) {
+//     // If they registered via form but never verified, verify them now
+//     user.isVerified = true;
+//     await user.save();
+//   }
+
+//   // Generate your application's JWT
+//   const jwtToken = generateToken({ userId: user.id });
+
+//   return {
+//     token: jwtToken,
+//     user: { 
+//       id: user.id, 
+//       name: user.name, 
+//       email: user.email, 
+//       isTwoFactorEnabled: user.isTwoFactorEnabled 
+//     },
+//   };
+// };
 // --- 2. AUTHENTICATOR SETUP & MANAGEMENT ---
 
 export const generate2FAService = async (email) => {

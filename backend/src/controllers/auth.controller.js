@@ -6,7 +6,8 @@ import {
   verify2FASetupService,
   disable2FAService,
   forgotPasswordService,
-  resetPasswordService
+  resetPasswordService,
+  // googleAuthService
 } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
 
@@ -39,6 +40,7 @@ export const verifyOtp = async (req, res) => {
     return errorResponse(res, error.message, 400);
   }
 };
+
 
 // --- NEW: 2FA Management Controllers ---
 
@@ -90,3 +92,15 @@ export const resetPassword = async (req, res) => {
     return errorResponse(res, error.message, 400);
   }
 };
+
+
+
+// export const googleAuth = async (req, res) => {
+//   try {
+//     const { token } = req.body;
+//     const result = await googleAuthService(token);
+//     return successResponse(res, "Google login successful.", result, 200);
+//   } catch (error) {
+//     return errorResponse(res, error.message, 400);
+//   }
+// };

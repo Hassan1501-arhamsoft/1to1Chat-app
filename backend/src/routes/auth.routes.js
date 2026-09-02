@@ -7,7 +7,8 @@ import {
   verify2FASetup, 
   disable2FA,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  // googleAuth
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/verify-otp", verifyOtp);
+// router.post("/google", googleAuth);
 
 // 2FA Management
 router.post("/2fa/generate", generate2FA);
